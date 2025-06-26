@@ -1,0 +1,13 @@
+{
+    "domain": "zonetouch3",
+    "name": "Zone Touch 3",
+    "codeowners": [
+        "@dsmackie"
+    ],
+    "config_flow": true,
+    "version": "0.0.1",
+    "loggers": ["zonetouch3"],
+    "requirements": ["modbus_crc"],
+    "issue_tracker": "https://github.com/dsmackie/hacs_zonetouch3/issues",
+    "documentation": "https://github.com/dsmackie/hacs_zonetouch3"
+}
