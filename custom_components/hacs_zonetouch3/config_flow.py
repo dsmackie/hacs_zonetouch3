@@ -26,6 +26,7 @@ class ZoneTouch3ConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Example Integration."""
 
     VERSION = 1
+    MINOR_VERSION = 1
     _input_data: dict[str, Any]
 
     async def async_step_user(
@@ -43,4 +44,18 @@ class ZoneTouch3ConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
+        )
+
+    async def async_step_reconfigure(self, user_input: dict[str, Any] | None = None):
+        """Handle reconfiguring of integration."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            return self.async_update_reload_and_abort(
+                self._get_reconfigure_entry(),
+                data_updates=user_input,
+            )
+
+        return self.async_show_form(
+            step_id="reconfigure", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
