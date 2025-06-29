@@ -15,28 +15,6 @@ PROTOCOL_HEAD_S = 0x55
 PROTOCOL_HEAD_E = 0xAA
 
 
-@dataclass
-class ZoneTouch3Sensor:
-    """Sensor device."""
-
-    entity_id: int
-    temperature: float
-
-
-# @dataclass
-# class ZoneTouch3Zone:
-#     """Zone device."""
-
-#     device_id: int
-#     device_unique_id: str
-#     device_type: str
-#     name: str
-#     current_valve_position: int
-#     status: GroupPowerStatus
-#     is_support_turbo: bool
-#     is_spill_on: bool
-
-
 class ZoneTouch3ClientError(Exception):
     """Exception to indicate a general API error."""
 
@@ -75,12 +53,11 @@ class ZoneTouch:
         return self.state
 
     async def connect(self):
-        _LOGGER.debug("connect")
         try:
             conn = asyncio.open_connection(self._host, self._port)
             self.reader, self.writer = await asyncio.wait_for(conn, timeout=5)
             self.connected = True
-            _LOGGER.debug(f"Connected to {self._host}:{self._port}")
+            _LOGGER.debug("Connected to %s:%s", self._host, self._port)
         except Exception as exception:
             msg = f"Failed to connect: {exception}"
             raise ZoneTouch3ClientError(
@@ -92,7 +69,7 @@ class ZoneTouch:
         _LOGGER.debug("Connection closing")
         if self.writer:
             self.writer.close()
-            asyncio.create_task(self.writer.wait_closed())
+            asyncio.create_task(self.writer.wait_closed())  # noqa: RUF006
         _LOGGER.debug("Connection closed")
 
     def start_listener(self):
@@ -112,14 +89,13 @@ class ZoneTouch:
             self.writer.write(data)
             await self.writer.drain()
             if wait:
-                data = await self.reader.read(1024)
-                return data
+                return await self.reader.read(1024)
         except Exception as e:
-            _LOGGER.debug(f"Error while sending: {e}")
+            _LOGGER.error("Error while sending: %s", e)
 
     async def listen(self):
         if not self.reader:
-            _LOGGER.debug("Not connected. Call connect() first.")
+            _LOGGER.debug("Not connected. Call connect() first")
             return
 
         try:
@@ -127,13 +103,13 @@ class ZoneTouch:
             while self.connected:
                 data = await self.reader.read(1024)
                 if not data:
-                    _LOGGER.debug("Connection closed by server.")
+                    _LOGGER.debug("Connection closed by server")
                     break
                 ztm = ZoneTouchMessage(data)
                 self.state.updateFromMessage(ztm)
                 self.on_state_update(self.state)
         except asyncio.CancelledError:
-            _LOGGER.debug("Listener task cancelled.")
+            _LOGGER.debug("Listener task cancelled")
         except Exception as ex:
             _LOGGER.debug(ex)
         finally:

@@ -6,7 +6,7 @@ import struct
 import modbus_crc
 
 from .const import PROTOCOL_HEAD_E, PROTOCOL_HEAD_S
-from .enums import Address, Command, ExData
+from .enums import Address, Command
 
 
 class GroupPowerStatus(Enum):
@@ -39,6 +39,7 @@ class ZoneTouch3Group:
         self.is_spill_on = is_spill_on
 
     def getPacketSetClosed(self, closed) -> bytes:
+        """Generate a packet to close the valve."""
         valve = 0
         if closed:
             valve = 2
@@ -64,6 +65,7 @@ class ZoneTouch3Group:
         return header + data + struct.pack("<BB", crc[1], crc[0])
 
     def getPacketSetPosition(self, position) -> bytes:
+        """Generate a packet to set the valve to desired position."""
         header = struct.pack(
             ">BBBB",
             PROTOCOL_HEAD_S,

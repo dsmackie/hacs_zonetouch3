@@ -59,8 +59,6 @@ class ZoneTouch3SensorEntity(ZoneTouch3Entity, SensorEntity):
 
     def _handle_coordinator_update(self) -> None:
         self._attr_native_value = self.coordinator.data.temperature
-        _LOGGER.debug("temp sensor UPDATE - _handle_coordinator_update")
-        _LOGGER.debug(type(self.coordinator.data))
         self.async_write_ha_state()
 
     @property
