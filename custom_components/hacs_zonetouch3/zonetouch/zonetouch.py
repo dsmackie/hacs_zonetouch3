@@ -1,6 +1,5 @@
 import asyncio
 from collections.abc import Callable
-from dataclasses import dataclass
 import logging
 import struct
 
@@ -90,9 +89,11 @@ class ZoneTouch:
 
     def start_listener(self):
         """Start the listener."""
+        _LOGGER.debug("Starting listener")
         self.listener = asyncio.create_task(self.listen())
+        _LOGGER.debug("Listener started")
 
-    async def stop_listener(self):
+    def stop_listener(self):
         """Stop the listener."""
         self.listener.cancel()
 
@@ -110,12 +111,12 @@ class ZoneTouch:
             _LOGGER.error("Error while sending: %s", e)
 
     async def listen(self):
+        """Listen for incoming data from Zone Touch 3 controller."""
         if not self.reader:
             _LOGGER.debug("Not connected. Call connect() first")
             return
 
         try:
-            _LOGGER.debug("Listening")
             while self.connected:
                 data = await self.reader.read(1024)
                 if not data:

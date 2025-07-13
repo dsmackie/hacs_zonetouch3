@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .zonetouch.zonetouch import ZoneTouch3ClientError
+from .zonetouch.state import ZoneTouch3State
 
 if TYPE_CHECKING:
     from .data import ZoneTouch3ConfigEntry
@@ -34,18 +34,13 @@ class ZoneTouch3DataUpdateCoordinator(DataUpdateCoordinator):
             config_entry=config_entry,
         )
 
-    async def _async_setup(self) -> None:
-        await self.config_entry.runtime_data.client.connect()
-        await self.config_entry.runtime_data.client.async_get_full_state()
+    async def _async_setup(self) -> ZoneTouch3State:
+        _LOGGER.debug("Fetching initial state")
+        return await self.config_entry.runtime_data.client.async_get_full_state()
 
-    async def _async_update_data(self) -> Any:
+    async def _async_update_data(self) -> ZoneTouch3State:
         """Update data via library."""
-        try:
-            if not self.config_entry.runtime_data.client.connected:
-                await self.config_entry.runtime_data.client.connect()
-            return await self.config_entry.runtime_data.client.async_get_full_state()
-        except ZoneTouch3ClientError as exception:
-            raise UpdateFailed(exception) from exception
+        return await self.config_entry.runtime_data.client.async_get_full_state()
 
     async def start_listener(self) -> None:
         """Start the listener."""
