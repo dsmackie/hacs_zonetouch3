@@ -45,7 +45,11 @@ class ZoneTouch:
     PROTOCOL_HEAD_E = 0xAA
 
     def __init__(
-        self, host: str, port: int, on_state_update: Callable | None = None
+        self,
+        host: str,
+        port: int,
+        on_state_update: Callable | None = None,
+        on_disconnect: Callable | None = None,
     ) -> None:
         """Sample API Client."""
         self._host = host
@@ -54,6 +58,7 @@ class ZoneTouch:
         self.writer: asyncio.StreamWriter | None = None
         self.connected = False
         self.on_state_update = on_state_update
+        self.on_disconnect = on_disconnect
         self.listener: asyncio.Task
         self.state = ZoneTouch3State()
 
@@ -121,6 +126,9 @@ class ZoneTouch:
                 self.on_state_update(self.state)
         except asyncio.CancelledError:
             _LOGGER.debug("Listener task cancelled")
+        except (ConnectionResetError, BrokenPipeError) as ex:
+            _LOGGER.debug("Connection lost (%s) - Reconnecting in 5 seconds", ex)
+            await asyncio.sleep(5)
         except Exception as ex:
             _LOGGER.debug(ex)
         finally:

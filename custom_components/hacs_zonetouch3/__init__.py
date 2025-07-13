@@ -36,6 +36,7 @@ async def async_setup_entry(
             host=config_entry.data[CONF_HOST],
             port=config_entry.data[CONF_PORT],
             on_state_update=coordinator.async_set_updated_data,
+            on_disconnect=coordinator.async_client_disconnected,
         ),
         integration=async_get_loaded_integration(hass, config_entry.domain),
         coordinator=coordinator,
