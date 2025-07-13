@@ -15,7 +15,19 @@ PROTOCOL_HEAD_S = 0x55
 PROTOCOL_HEAD_E = 0xAA
 
 
-class ZoneTouch3ClientError(Exception):
+class ZoneTouch3Exception(Exception):
+    """Base class for errors throw by ZoneTouch3."""
+
+    def __init__(self, reason: str | None = None) -> None:
+        """Init the exception."""
+        self.reason = reason
+
+
+class ZoneTouch3ClientError(ZoneTouch3Exception):
+    """Exception to indicate a general API error."""
+
+
+class ZoneTouch3ConnectionFailedException(ZoneTouch3Exception):
     """Exception to indicate a general API error."""
 
 
@@ -59,9 +71,8 @@ class ZoneTouch:
             self.connected = True
             _LOGGER.debug("Connected to %s:%s", self._host, self._port)
         except Exception as exception:
-            msg = f"Failed to connect: {exception}"
-            raise ZoneTouch3ClientError(
-                msg,
+            raise ZoneTouch3ConnectionFailedException(
+                f"Failed to connect: {exception}"
             ) from exception
 
     async def close(self) -> None:

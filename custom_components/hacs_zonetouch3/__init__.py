@@ -6,12 +6,13 @@ import logging
 
 from homeassistant.const import CONF_HOST, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryError
 from homeassistant.loader import async_get_loaded_integration
 
 from .const import DOMAIN
 from .coordinator import ZoneTouch3DataUpdateCoordinator
 from .data import ZoneTouch3ConfigEntry, ZoneTouch3Data
-from .zonetouch.zonetouch import ZoneTouch
+from .zonetouch.zonetouch import ZoneTouch, ZoneTouch3ConnectionFailedException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,6 +40,13 @@ async def async_setup_entry(
         integration=async_get_loaded_integration(hass, config_entry.domain),
         coordinator=coordinator,
     )
+
+    try:
+        await config_entry.runtime_data.client.connect()
+    except ZoneTouch3ConnectionFailedException as err:
+        raise ConfigEntryError(
+            f"Connection to ZoneTouch3 failed: {err.reason}"
+        ) from err
 
     await coordinator.async_config_entry_first_refresh()
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
