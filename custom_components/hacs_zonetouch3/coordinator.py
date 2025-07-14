@@ -48,8 +48,6 @@ class ZoneTouch3DataUpdateCoordinator(DataUpdateCoordinator):
 
     async def async_client_disconnected(self) -> None:
         """Handle client disconnection."""
-        self.config_entry.runtime_data.client.stop_listener()
-
         await self.config_entry.runtime_data.client.connect()
         await self.start_listener()
         await self.config_entry.runtime_data.client.async_get_full_state()

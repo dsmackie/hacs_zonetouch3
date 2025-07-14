@@ -69,6 +69,7 @@ class ZoneTouch:
         return self.state
 
     async def connect(self):
+        """Connect to the ZoneTouch3 controller."""
         try:
             conn = asyncio.open_connection(self._host, self._port)
             self.reader, self.writer = await asyncio.wait_for(conn, timeout=5)
@@ -84,8 +85,10 @@ class ZoneTouch:
         _LOGGER.debug("Connection closing")
         if self.writer:
             self.writer.close()
-            asyncio.create_task(self.writer.wait_closed())  # noqa: RUF006
         _LOGGER.debug("Connection closed")
+        self.writer = None
+        self.reader = None
+        self.connected = False
 
     def start_listener(self):
         """Start the listener."""
@@ -95,20 +98,24 @@ class ZoneTouch:
 
     def stop_listener(self):
         """Stop the listener."""
+        _LOGGER.debug("Stopping listener")
         self.listener.cancel()
+        _LOGGER.debug("Listener stopped")
 
-    async def send(self, data: bytes, wait=False):
+    async def send(self, data: bytes, wait=False) -> bytes | None:
         """Send a command."""
         if not self.writer:
-            _LOGGER.debug("Not connected. Call connect() first")
+            _LOGGER.error("Not connected. Call connect() first")
 
-        try:
-            self.writer.write(data)
-            await self.writer.drain()
-            if wait:
-                return await self.reader.read(1024)
-        except Exception as e:
-            _LOGGER.error("Error while sending: %s", e)
+        self.writer.write(data)
+        await self.writer.drain()
+        if wait:
+            data = await self.reader.read(1024)
+            if not data:
+                raise ConnectionResetError("No response received.")
+            return data
+
+        return None
 
     async def listen(self):
         """Listen for incoming data from Zone Touch 3 controller."""
@@ -117,24 +124,26 @@ class ZoneTouch:
             return
 
         try:
-            while self.connected:
+            while not self.reader.at_eof():
                 data = await self.reader.read(1024)
                 if not data:
-                    _LOGGER.debug("Connection closed by server")
-                    break
+                    raise ConnectionResetError("Connection closed by server.")  # noqa: TRY301
                 ztm = ZoneTouchMessage(data)
                 self.state.updateFromMessage(ztm)
                 self.on_state_update(self.state)
         except asyncio.CancelledError:
             _LOGGER.debug("Listener task cancelled")
-        except (ConnectionResetError, BrokenPipeError) as ex:
+        except (
+            ConnectionAbortedError,
+            ConnectionResetError,
+            BrokenPipeError,
+        ) as ex:
             _LOGGER.debug("Connection lost (%s) - Reconnecting in 5 seconds", ex)
             await asyncio.sleep(5)
+            await self.connect()
+            self.start_listener()
         except Exception as ex:
-            _LOGGER.debug(ex)
-        finally:
-            self.connected = False
-            await self.close()
+            _LOGGER.error(ex)
 
     def getPacketFetchFullState(self):
         packet = DataPacket()
