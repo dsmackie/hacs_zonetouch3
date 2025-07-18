@@ -34,12 +34,9 @@ class ZoneTouch3DataUpdateCoordinator(DataUpdateCoordinator):
             config_entry=config_entry,
         )
 
-    async def _async_setup(self) -> ZoneTouch3State:
-        _LOGGER.debug("Fetching initial state")
-        return await self.config_entry.runtime_data.client.async_get_full_state()
-
     async def _async_update_data(self) -> ZoneTouch3State:
         """Update data via library."""
+        _LOGGER.debug("Fetching initial state")
         return await self.config_entry.runtime_data.client.async_get_full_state()
 
     async def start_listener(self) -> None:
