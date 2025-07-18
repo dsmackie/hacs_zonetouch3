@@ -19,6 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.VALVE,
+    Platform.BINARY_SENSOR,
 ]
 
 
