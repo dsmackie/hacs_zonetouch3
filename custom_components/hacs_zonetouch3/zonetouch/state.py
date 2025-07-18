@@ -139,9 +139,9 @@ class ZoneTouch3State:
         return offset + _console_id_length + 1
 
     def __parseOneGroupInfo(self, data) -> ZoneTouch3Group:
-        index: int = struct.unpack_from(">B", data, 4)[0]
-        position = struct.unpack_from(">B", data, 5)[0]
-        sign = struct.unpack_from(">B", data, 6)[0]
+        index: int = struct.unpack_from(">B", data, 0)[0]
+        position = struct.unpack_from(">B", data, 1)[0]
+        sign = struct.unpack_from(">B", data, 2)[0]
 
         groupIndex = index & 0x3F
         powerStatus = GroupPowerStatus(index >> 6)
@@ -158,12 +158,15 @@ class ZoneTouch3State:
         )
 
     def __parseGroupInfo(self, data):
+        """Parse group info."""
         group_count = struct.unpack_from(">b", data, 0)[0]
         data_len = struct.unpack_from(">b", data, 1)[0]
         name_len = struct.unpack_from(">b", data, 2)[0]
 
         for idx, x in enumerate(range(group_count)):
-            group = self.__parseOneGroupInfo(data[data_len * idx :])
+            group = self.__parseOneGroupInfo(
+                data[data_len * idx + 4 : (data_len * idx) + 7]
+            )
             group.name = (
                 struct.unpack_from(f">{name_len}s", data, (data_len * idx) + 14)[0]
                 .decode("utf-8")
