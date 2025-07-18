@@ -1,6 +1,7 @@
 import asyncio
 from collections.abc import Callable
 import logging
+import socket
 import struct
 
 import modbus_crc
@@ -53,6 +54,7 @@ class ZoneTouch:
         """Sample API Client."""
         self._host = host
         self._port = port
+        self.sock: socket.socket
         self.reader: asyncio.StreamReader | None = None
         self.writer: asyncio.StreamWriter | None = None
         self.connected = False
@@ -71,11 +73,31 @@ class ZoneTouch:
     async def connect(self):
         """Connect to the ZoneTouch3 controller."""
         try:
-            conn = asyncio.open_connection(self._host, self._port)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+            # Enable TCP keepalive
+            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+
+            # Set TCP keepalive parameters
+            self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60)
+            self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)
+            self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)
+
+            # Disable Nagle's algorithm
+            self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+            self.sock.setblocking(False)
+
+            await asyncio.get_event_loop().sock_connect(
+                self.sock, (self._host, self._port)
+            )
+
+            conn = asyncio.open_connection(sock=self.sock)
             self.reader, self.writer = await asyncio.wait_for(conn, timeout=5)
             self.connected = True
             _LOGGER.debug("Connected to %s:%s", self._host, self._port)
         except Exception as exception:
+            self.sock.close()
             raise ZoneTouch3ConnectionFailedException(
                 f"Failed to connect: {exception}"
             ) from exception
@@ -83,6 +105,7 @@ class ZoneTouch:
     async def close(self) -> None:
         """Close the connection."""
         _LOGGER.debug("Connection closing")
+        self.sock.close()
         if self.writer:
             self.writer.close()
         _LOGGER.debug("Connection closed")
@@ -124,7 +147,7 @@ class ZoneTouch:
             return
 
         try:
-            while not self.reader.at_eof():
+            while True:
                 data = await self.reader.read(1024)
                 if not data:
                     raise ConnectionResetError("Connection closed by server.")  # noqa: TRY301
