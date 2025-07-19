@@ -46,6 +46,7 @@ class ZoneTouchMessage:
                             self.__parseGroupControl(self.message_data, count)
                         case Response.RESPONSE_GROUP_NAME:
                             _LOGGER.debug("RESPONSE_GROUP_NAME")
+                            self.__unpack_group_names(count, length)
                         case Response.RESPONSE_FAVOURITE:
                             _LOGGER.debug("RESPONSE_FAVOURITE")
                         case Response.RESPONSE_PROGRAM:
@@ -116,6 +117,16 @@ class ZoneTouchMessage:
             )
             if addr == 159 and temperature >= 0:
                 self.temperature = (temperature - 500) / 10
+
+    def __unpack_group_names(self, count: int, length: int) -> None:
+        name_len: int = struct.unpack_from(">B", self.message_data)[0]
+        for x in range(count):
+            (groupIndex, name) = struct.unpack_from(
+                f">B{name_len}s", self.message_data, (length * x) + 2
+            )
+            name = name.decode("utf-8").rstrip("\x00").strip()
+            group = ZoneTouch3Group(groupIndex, name, 0, None, False, False)
+            self.groups[groupIndex] = group
 
     def __parseGroupControl(self, data, count) -> None:
         for idx in range(count):
