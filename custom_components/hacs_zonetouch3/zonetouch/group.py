@@ -89,6 +89,7 @@ class ZoneTouch3Group:
         """Check if equal with another object."""
         return (
             self.id == other.id
+            and self.name == other.name
             and self.position == other.position
             and self.status == other.status
         )
