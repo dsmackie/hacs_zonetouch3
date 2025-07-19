@@ -50,7 +50,7 @@ class ZoneTouch3ValveEntity(ZoneTouch3Entity, ValveEntity):
         super().__init__(coordinator)
         self.group = group
         self._attr_name = group.name
-        self._attr_unique_id = f"{DOMAIN}-{group.id}"
+        self._attr_unique_id = f"{DOMAIN}_valve_{group.id}"
         self._attr_current_valve_position = group.position
         self._attr_is_closed = group.status == GroupPowerStatus.OFF
 
