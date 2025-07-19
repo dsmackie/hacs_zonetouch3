@@ -174,8 +174,7 @@ class ZoneTouch:
         packet.addr_dest = self.ADDRESS_CONSOLE
         packet.addr_src = self.ADDRESS_REMOTE
         packet.command = self.COMMAND_EXPAND
-        p = self.__createFullPacket(packet)
-        return p
+        return self.__createFullPacket(packet)
 
     def __createFullPacket(self, packet):
         header = struct.pack(
@@ -193,10 +192,4 @@ class ZoneTouch:
 
         crc = modbus_crc.crc16(data)
 
-        p = header + data + struct.pack("<BB", crc[1], crc[0])
-
-        return p
-
-
-async def on_state_update_handler(state):
-    _LOGGER.debug(state)
+        return header + data + struct.pack("<BB", crc[1], crc[0])
