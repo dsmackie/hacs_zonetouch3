@@ -67,10 +67,12 @@ class ZoneTouch3State:
             case Response.RESPONSE_SENSOR:
                 self.temperature = msg.temperature
             case Response.RESPONSE_GROUP_CONTROL:
-                for id in msg.groups:
-                    self.groups[id].position = msg.groups[id].position
-                    self.groups[id].status = msg.groups[id].status
-                    self.groups[id].is_spill_on = msg.groups[id].is_spill_on
+                for groupIndex in msg.groups:
+                    self.groups[groupIndex].position = msg.groups[groupIndex].position
+                    self.groups[groupIndex].status = msg.groups[groupIndex].status
+                    self.groups[groupIndex].is_spill_on = msg.groups[
+                        groupIndex
+                    ].is_spill_on
             case _:
                 _LOGGER.debug("Unhandled sub message type")
 
