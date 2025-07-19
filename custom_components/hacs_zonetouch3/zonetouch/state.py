@@ -73,6 +73,10 @@ class ZoneTouch3State:
                     self.groups[groupIndex].is_spill_on = msg.groups[
                         groupIndex
                     ].is_spill_on
+            case Response.RESPONSE_GROUP_NAME:
+                for groupIndex, group_data in msg.groups.items():
+                    if groupIndex in self.groups:
+                        self.groups[groupIndex].name = group_data.name
             case _:
                 _LOGGER.debug("Unhandled sub message type")
 
