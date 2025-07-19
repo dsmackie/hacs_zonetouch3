@@ -63,7 +63,7 @@ class ZoneTouch3ValveEntity(ZoneTouch3Entity, ValveEntity):
         if self._attr_is_closed != (self.group.status == GroupPowerStatus.OFF):
             self._attr_is_closed = self.group.status == GroupPowerStatus.OFF
 
-        return self.async_write_ha_state()
+        self.async_write_ha_state()
 
     async def async_handle_close_valve(self) -> None:
         """Close the valve."""
