@@ -129,16 +129,16 @@ class ZoneTouchMessage:
             self.groups[groupIndex] = group
 
     def __parseGroupControl(self, data, count) -> None:
+        data_len = 8
         for idx in range(count):
-            data_len = 8
             index: int = struct.unpack_from(">B", data, (data_len * idx) + 0)[0]
             position = struct.unpack_from(">B", data, (data_len * idx) + 1)[0]
-            sign = struct.unpack_from(">B", data, (data_len * idx) + 2)[0]
+            sign = struct.unpack_from(">B", data, (data_len * idx) + 6)[0]
 
             groupIndex = index & 0x3F
             powerStatus = GroupPowerStatus(index >> 6)
-            is_support_turbo = sign & 0x80 != 0
-            is_spill_on = sign & 0x02 != 0
+            is_support_turbo = (sign & 0x80) != 0
+            is_spill_on = (sign & 0x02) != 0
 
             group = ZoneTouch3Group(
                 groupIndex,
