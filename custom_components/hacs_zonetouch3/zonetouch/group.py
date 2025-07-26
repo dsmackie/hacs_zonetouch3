@@ -92,6 +92,8 @@ class ZoneTouch3Group:
             and self.name == other.name
             and self.position == other.position
             and self.status == other.status
+            and self.is_support_turbo == other.is_support_turbo
+            and self.is_spill_on == other.is_spill_on
         )
 
     def __repr__(self):
