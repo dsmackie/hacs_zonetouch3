@@ -153,7 +153,8 @@ class ZoneTouch:
                     raise ConnectionResetError("Connection closed by server.")  # noqa: TRY301
                 ztm = ZoneTouchMessage(data)
                 self.state.updateFromMessage(ztm)
-                self.on_state_update(self.state)
+                if self.on_state_update:
+                    self.on_state_update(self.state)
         except asyncio.CancelledError:
             _LOGGER.debug("Listener task cancelled")
         except (
@@ -166,7 +167,11 @@ class ZoneTouch:
             await self.connect()
             self.start_listener()
         except Exception as ex:
-            _LOGGER.error(ex)
+            _LOGGER.error(ex, stack_info=True)
+            _LOGGER.debug("Connection lost (%s) - Reconnecting in 5 seconds", ex)
+            await asyncio.sleep(5)
+            await self.connect()
+            self.start_listener()
 
     def getPacketFetchFullState(self):
         packet = DataPacket()
