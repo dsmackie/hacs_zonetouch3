@@ -43,10 +43,17 @@ class ZoneTouchMessage:
                     match self.sub_message_type:
                         case Response.RESPONSE_GROUP_CONTROL:
                             _LOGGER.debug("RESPONSE_GROUP_CONTROL")
-                            self.__parseGroupControl(self.message_data, count)
+                            groups = ZoneTouch3Group.parse_group_control(
+                                self.message_data, count, length
+                            )
+                            self.groups = groups
                         case Response.RESPONSE_GROUP_NAME:
                             _LOGGER.debug("RESPONSE_GROUP_NAME")
-                            self.__unpack_group_names(count, length)
+                            group_names = ZoneTouch3Group.parse_group_names(
+                                self.message_data, count, length
+                            )
+                            for group_index, group_name in group_names.items():
+                                self.groups[group_index].name = group_name
                         case Response.RESPONSE_FAVOURITE:
                             _LOGGER.debug("RESPONSE_FAVOURITE")
                         case Response.RESPONSE_PROGRAM:
@@ -117,36 +124,3 @@ class ZoneTouchMessage:
             )
             if addr == 159 and temperature >= 0:
                 self.temperature = (temperature - 500) / 10
-
-    def __unpack_group_names(self, count: int, length: int) -> None:
-        name_len: int = struct.unpack_from(">B", self.message_data)[0]
-        for x in range(count):
-            (groupIndex, name) = struct.unpack_from(
-                f">B{name_len}s", self.message_data, (length * x) + 2
-            )
-            name = name.decode("utf-8").rstrip("\x00").strip()
-            group = ZoneTouch3Group(groupIndex, name, 0, None, False, False)
-            self.groups[groupIndex] = group
-
-    def __parseGroupControl(self, data, count) -> None:
-        data_len = 8
-        for idx in range(count):
-            index: int = struct.unpack_from(">B", data, (data_len * idx) + 0)[0]
-            position = struct.unpack_from(">B", data, (data_len * idx) + 1)[0]
-            sign = struct.unpack_from(">B", data, (data_len * idx) + 6)[0]
-
-            groupIndex = index & 0x3F
-            powerStatus = GroupPowerStatus(index >> 6)
-            is_support_turbo = (sign & 0x80) != 0
-            is_spill_on = (sign & 0x02) != 0
-
-            group = ZoneTouch3Group(
-                groupIndex,
-                None,
-                position,
-                powerStatus,
-                is_support_turbo,
-                is_spill_on,
-            )
-
-            self.groups[groupIndex] = group
