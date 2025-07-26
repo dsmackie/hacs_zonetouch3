@@ -25,7 +25,7 @@ async def async_setup_entry(
 
 
 class ZoneTouch3GroupSpillSensor(BinarySensorEntity, ZoneTouch3Entity):
-    """Hyundai / Kia Connect binary sensor class."""
+    """Group Spill Sensor class."""
 
     def __init__(
         self,

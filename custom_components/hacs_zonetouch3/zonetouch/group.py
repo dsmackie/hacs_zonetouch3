@@ -2,7 +2,7 @@
 
 from enum import Enum
 import struct
-from typing import Dict, Self
+from typing import Self
 
 import modbus_crc
 
