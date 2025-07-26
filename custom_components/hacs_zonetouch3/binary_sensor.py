@@ -1,6 +1,5 @@
 """Binary Sensor entity."""
 
-from config.custom_components.zonetouch3.zonetouch.group import ZoneTouch3Group
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
@@ -10,6 +9,7 @@ from .const import DOMAIN
 from .coordinator import ZoneTouch3DataUpdateCoordinator
 from .data import ZoneTouch3ConfigEntry
 from .entity import ZoneTouch3Entity
+from .zonetouch.group import ZoneTouch3Group
 
 
 async def async_setup_entry(
