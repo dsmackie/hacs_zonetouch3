@@ -8,6 +8,7 @@ class Address(Enum):
 
 
 class Response(Enum):
+    NONE = 0x00
     RESPONSE_GROUP_CONTROL = 0x21
     RESPONSE_GROUP_NAME = 0x43
     RESPONSE_FAVOURITE = 0x31
@@ -23,6 +24,7 @@ class Response(Enum):
 
 
 class MessageType(Enum):
+    NONE = 0x00
     MESSAGE_TYPE_EXPAND = 0x1F
     MESSAGE_TYPE_SUBCOMMAND = 0xC0
 

@@ -1,10 +1,12 @@
+"""ZoneTouch 3 messages class."""
+
 import logging
 import struct
 
 import modbus_crc
 
 from .enums import Address, MessageType, Response
-from .group import GroupPowerStatus, ZoneTouch3Group
+from .group import ZoneTouch3Group
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,10 +21,10 @@ class ZoneTouchMessage:
         self.addrDest = None
         self.addrSrc = None
         self.message_id = None
-        self.message_type: MessageType = None
-        self.sub_message_type: Response = None
+        self.message_type: MessageType = MessageType.NONE
+        self.sub_message_type: Response = Response.NONE
         self.length = None
-        self.message_data = None
+        self.message_data = b""
         self.temperature: float = 0
         self.groups: dict[int, ZoneTouch3Group] = {}
 
