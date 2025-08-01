@@ -6,7 +6,7 @@ I was wanting to automate the Bathroom vent so I could have a warm environment f
 
 ### Features
 - Reflects live changes from physical control panel
-- Populates vent names from those defined at the control panel
+- Populates fan names from those defined at the control panel
 - Records temperature changes from control panel sensor
 - Auto reconnects when connection to control panel lost
 - Supports automation
