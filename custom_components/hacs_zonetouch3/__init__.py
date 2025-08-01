@@ -53,6 +53,7 @@ async def async_setup_entry(
     await coordinator.async_config_entry_first_refresh()
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
     await coordinator.start_listener()
+    await coordinator.start_send_queue()
     config_entry.async_on_unload(config_entry.add_update_listener(async_reload_entry))
 
     return True

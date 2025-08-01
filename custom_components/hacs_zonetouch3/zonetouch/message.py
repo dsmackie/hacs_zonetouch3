@@ -20,7 +20,7 @@ class ZoneTouchMessage:
         self.header = None
         self.addrDest = None
         self.addrSrc = None
-        self.message_id = None
+        self.message_id: int = 0
         self.message_type: MessageType = MessageType.NONE
         self.sub_message_type: Response = Response.NONE
         self.length = None

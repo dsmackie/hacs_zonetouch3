@@ -11,6 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import ATTR_SPEED, DOMAIN, EVENT_ZONETOUCH3_FAN_PERCENTAGE
 from .data import ZoneTouch3ConfigEntry
 from .entity import ZoneTouch3DataUpdateCoordinator, ZoneTouch3Entity
+from .zonetouch.commands.group import GroupCommand
 from .zonetouch.group import GroupPowerStatus, ZoneTouch3Group
 
 _LOGGER = logging.getLogger(__name__)
@@ -64,8 +65,8 @@ class ZoneTouch3FanEntity(ZoneTouch3Entity, FanEntity):
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the fan off."""
         _LOGGER.debug("Turning OFF %s fan", self.name)
-        payload = self.group.getPacketSetClosed(True)
-        await self.coordinator.config_entry.runtime_data.client.send(payload)
+        payload = GroupCommand().build_closed_packet(self.group.id, True)
+        await self.coordinator.config_entry.runtime_data.client.queue_command(payload)
 
     async def async_turn_on(
         self,
@@ -75,14 +76,14 @@ class ZoneTouch3FanEntity(ZoneTouch3Entity, FanEntity):
     ) -> None:
         """Turn the fan on."""
         _LOGGER.debug("Turning ON %s fan (%d%%)", self.name, self.group.position)
-        payload = self.group.getPacketSetClosed(False)
-        await self.coordinator.config_entry.runtime_data.client.send(payload)
+        payload = GroupCommand().build_closed_packet(self.group.id, False)
+        await self.coordinator.config_entry.runtime_data.client.queue_command(payload)
 
     async def async_set_percentage(self, percentage: int) -> None:
         """Set fan speed."""
         _LOGGER.debug("Setting %s fan to %d", self.name, percentage)
-        payload = self.group.getPacketSetPosition(percentage)
-        await self.coordinator.config_entry.runtime_data.client.send(payload)
+        payload = GroupCommand().build_position_packet(self.group.id, percentage)
+        await self.coordinator.config_entry.runtime_data.client.queue_command(payload)
         self._attr_percentage = percentage
         self.fire_position_event()
         self.async_write_ha_state()

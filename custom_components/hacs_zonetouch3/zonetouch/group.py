@@ -31,53 +31,6 @@ class ZoneTouch3Group:
     is_support_turbo: bool
     is_spill_on: bool
 
-    def getPacketSetClosed(self, closed) -> bytes:
-        """Generate a packet to close the valve."""
-        valve = 0
-        if closed:
-            valve = 2
-        else:
-            valve = 3
-        header = struct.pack(
-            ">BBBB",
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_E,
-        )
-
-        data = struct.pack(
-            ">BBB", Address.ADDRESS_MAIN_BOARD.value, Address.ADDRESS_REMOTE.value, 1
-        )
-        data += struct.pack(">B", Command.COMMAND_GROUP_CONTROL.value >> 8)
-        data += struct.pack(">BBB", 0, 12, Command.COMMAND_GROUP_CONTROL.value % 256)
-        data += struct.pack(">BHHHBBBB", 0, 0, 4, 1, self.id, valve, 0, 0)
-
-        crc = modbus_crc.crc16(data)
-
-        return header + data + struct.pack("<BB", crc[1], crc[0])
-
-    def getPacketSetPosition(self, position) -> bytes:
-        """Generate a packet to set the valve to desired position."""
-        header = struct.pack(
-            ">BBBB",
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_E,
-        )
-
-        data = struct.pack(
-            ">BBB", Address.ADDRESS_MAIN_BOARD.value, Address.ADDRESS_REMOTE.value, 1
-        )
-        data += struct.pack(">B", Command.COMMAND_GROUP_CONTROL.value >> 8)
-        data += struct.pack(">BBB", 0, 12, Command.COMMAND_GROUP_CONTROL.value % 256)
-        data += struct.pack(">BHHHBBBB", 0, 0, 4, 1, self.id, 0x80, position, 0)
-
-        crc = modbus_crc.crc16(data)
-
-        return header + data + struct.pack("<BB", crc[1], crc[0])
-
     @classmethod
     def parse_group_names(cls, data: bytes, count: int, length: int) -> dict[int, str]:
         """Parse group names."""
