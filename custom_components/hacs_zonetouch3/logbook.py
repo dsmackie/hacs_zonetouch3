@@ -44,11 +44,11 @@ def async_describe_events(
     @callback
     def async_describe_hass_event(event: Event[NoEventData]) -> dict[str, str]:
         """Describe homeassistant logbook event."""
-        percentage = event.data.get("percentage")
+        speed = event.data.get("speed")
         return {
             LOGBOOK_ENTRY_NAME: event.data.get(ATTR_NAME),
             LOGBOOK_ENTRY_ENTITY_ID: event.data.get(ATTR_ENTITY_ID),
-            LOGBOOK_ENTRY_MESSAGE: f"speed changed to {percentage}",
+            LOGBOOK_ENTRY_MESSAGE: f"speed changed to {speed}",
             LOGBOOK_ENTRY_ICON: "mdi:fan",
         }
 
