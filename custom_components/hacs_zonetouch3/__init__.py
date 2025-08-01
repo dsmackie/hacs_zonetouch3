@@ -17,9 +17,9 @@ from .zonetouch.zonetouch import ZoneTouch, ZoneTouch3ConnectionFailedException
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[Platform] = [
-    Platform.SENSOR,
-    Platform.VALVE,
     Platform.BINARY_SENSOR,
+    Platform.FAN,
+    Platform.SENSOR,
 ]
 
 

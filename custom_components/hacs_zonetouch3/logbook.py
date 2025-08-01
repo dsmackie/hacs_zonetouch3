@@ -22,7 +22,7 @@ from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers.typing import NoEventData
 from homeassistant.util.event_type import EventType
 
-from .const import DOMAIN, EVENT_ZONETOUCH3_VALVE_POSITION
+from .const import DOMAIN, EVENT_ZONETOUCH3_FAN_PERCENTAGE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,14 +44,14 @@ def async_describe_events(
     @callback
     def async_describe_hass_event(event: Event[NoEventData]) -> dict[str, str]:
         """Describe homeassistant logbook event."""
-        position = event.data.get("position")
+        percentage = event.data.get("percentage")
         return {
             LOGBOOK_ENTRY_NAME: event.data.get(ATTR_NAME),
             LOGBOOK_ENTRY_ENTITY_ID: event.data.get(ATTR_ENTITY_ID),
-            LOGBOOK_ENTRY_MESSAGE: f"position changed to {position}",
-            LOGBOOK_ENTRY_ICON: "mdi:valve",
+            LOGBOOK_ENTRY_MESSAGE: f"speed changed to {percentage}",
+            LOGBOOK_ENTRY_ICON: "mdi:fan",
         }
 
     async_describe_event(
-        DOMAIN, EVENT_ZONETOUCH3_VALVE_POSITION, async_describe_hass_event
+        DOMAIN, EVENT_ZONETOUCH3_FAN_PERCENTAGE, async_describe_hass_event
     )

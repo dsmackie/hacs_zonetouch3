@@ -36,8 +36,8 @@ class ZoneTouch3GroupSpillSensor(BinarySensorEntity, ZoneTouch3Entity):
         super().__init__(coordinator)
         self.group = group
         self._attr_name = f"{group.name} Spill"
-        self._attr_on_icon = ("mdi:valve-open",)
-        self._attr_off_icon = ("mdi:valve-closed",)
+        self._attr_on_icon = ("mdi:fan-auto",)
+        self._attr_off_icon = ("mdi:fan-off",)
         self._attr_unique_id = f"{DOMAIN}_valve_{group.id}_spill"
         self._attr_name = f"{group.name} Spill"
         self._attr_entity_category = EntityCategory.DIAGNOSTIC

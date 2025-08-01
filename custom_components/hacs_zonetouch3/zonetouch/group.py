@@ -1,5 +1,6 @@
 """Group file."""
 
+from dataclasses import dataclass
 from enum import Enum
 import struct
 from typing import Self
@@ -19,25 +20,16 @@ class GroupPowerStatus(Enum):
     TURBO = 2
 
 
+@dataclass
 class ZoneTouch3Group:
     """ZoneTouch3 Group class."""
 
-    def __init__(
-        self,
-        id: int,
-        name: str,
-        position: int,
-        status: GroupPowerStatus,
-        is_support_turbo: bool,
-        is_spill_on: bool,
-    ) -> None:
-        """Init the object."""
-        self.id = id
-        self.name = name
-        self.position = position
-        self.status = status
-        self.is_support_turbo = is_support_turbo
-        self.is_spill_on = is_spill_on
+    id: int
+    name: str
+    position: int
+    status: GroupPowerStatus
+    is_support_turbo: bool
+    is_spill_on: bool
 
     def getPacketSetClosed(self, closed) -> bytes:
         """Generate a packet to close the valve."""
@@ -85,21 +77,6 @@ class ZoneTouch3Group:
         crc = modbus_crc.crc16(data)
 
         return header + data + struct.pack("<BB", crc[1], crc[0])
-
-    def __eq__(self, other):
-        """Check if equal with another object."""
-        return (
-            self.id == other.id
-            and self.name == other.name
-            and self.position == other.position
-            and self.status == other.status
-            and self.is_support_turbo == other.is_support_turbo
-            and self.is_spill_on == other.is_spill_on
-        )
-
-    def __repr__(self):
-        """Return a string representation of the object."""
-        return f"Group(id={self.id}, name={self.name}, position={self.position}, status={self.status}, isSupportTurbo={self.is_support_turbo}, isSpillOn={self.is_spill_on})"
 
     @classmethod
     def parse_group_names(cls, data: bytes, count: int, length: int) -> dict[int, str]:
