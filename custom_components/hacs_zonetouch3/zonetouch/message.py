@@ -2,6 +2,7 @@
 
 import logging
 import struct
+from typing import Optional
 
 import modbus_crc
 
@@ -21,8 +22,8 @@ class ZoneTouchMessage:
         self.addrDest = None
         self.addrSrc = None
         self.message_id: int = 0
-        self.message_type: MessageType
-        self.sub_message_type: Response
+        self.message_type: MessageType | None = None
+        self.sub_message_type: Response | None = None
         self.length = None
         self.message_data = b""
         self.temperature: float = 0
@@ -85,7 +86,8 @@ class ZoneTouchMessage:
         _LOGGER.debug(Address(self.addrDest))
         _LOGGER.debug(Address(self.addrSrc))
         _LOGGER.debug(self.message_type)
-        _LOGGER.debug(self.sub_message_type)
+        if self.sub_message_type is not None:
+            _LOGGER.debug(self.sub_message_type)
         _LOGGER.debug(self.data.hex())
         _LOGGER.debug(self.message_data.hex())
 
