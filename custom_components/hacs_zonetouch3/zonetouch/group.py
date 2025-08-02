@@ -5,11 +5,6 @@ from enum import Enum
 import struct
 from typing import Self
 
-import modbus_crc
-
-from .const import PROTOCOL_HEAD_E, PROTOCOL_HEAD_S
-from .enums import Address, Command
-
 
 class GroupPowerStatus(Enum):
     """Group Power Status."""
