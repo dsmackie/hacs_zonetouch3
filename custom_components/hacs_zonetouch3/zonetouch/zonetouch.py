@@ -203,9 +203,11 @@ class ZoneTouch:
             await asyncio.sleep(5)
             await self.connect()
             self.start_listener()
+            self.start_send_queue()
         except Exception as ex:
             _LOGGER.error(ex, stack_info=True)
             _LOGGER.debug("Connection lost (%s) - Reconnecting in 5 seconds", ex)
             await asyncio.sleep(5)
             await self.connect()
             self.start_listener()
+            self.start_send_queue()
