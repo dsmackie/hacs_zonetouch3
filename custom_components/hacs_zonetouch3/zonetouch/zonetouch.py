@@ -185,12 +185,12 @@ class ZoneTouch:
                 if not data:
                     raise ConnectionResetError("Connection closed by server.")  # noqa: TRY301
                 ztm = ZoneTouchMessage(data)
-                future = self.pending_commands.get(ztm.message_id)
-                if future and not future.done():
-                    future.set_result(True)
                 self.state.updateFromMessage(ztm)
                 if self.on_state_update:
                     self.on_state_update(self.state)
+                future = self.pending_commands.get(ztm.message_id)
+                if future and not future.done():
+                    future.set_result(True)
         except asyncio.CancelledError:
             _LOGGER.debug("Listener task cancelled")
         except (
