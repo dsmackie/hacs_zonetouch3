@@ -25,8 +25,9 @@ I suck at Python coding. I suck at Home Assistant integration coding.
 
 ### Screenshot of device and entities
 
-<img width="2008" height="1492" alt="Screenshot from 2025-08-01 19-34-39" src="https://github.com/user-attachments/assets/c29bafbd-417f-4395-bfcb-20dc4f20be5b" />
+<img width="1994" height="1754" alt="Screenshot from 2025-08-02 19-36-34" src="https://github.com/user-attachments/assets/5f55edba-fd0a-48b5-8bcf-d1a36e7d2a5f" />
 
 ### Screenshot of a warm bathroom automation
 
 <img width="2146" height="1470" alt="Screenshot from 2025-08-01 19-32-04" src="https://github.com/user-attachments/assets/bd477505-ee09-4e8e-8774-9f1028908fcb" />
+
