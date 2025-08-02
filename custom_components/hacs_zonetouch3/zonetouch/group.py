@@ -51,12 +51,12 @@ class ZoneTouch3Group:
 
             groups[groupIndex] = cls(
                 groupIndex,
-                groups[groupIndex].name,
+                "",
                 position,
                 powerStatus,
                 is_support_turbo,
                 is_spill_on,
-                groups[groupIndex].is_spill_set,
+                False,
             )
 
         return groups
