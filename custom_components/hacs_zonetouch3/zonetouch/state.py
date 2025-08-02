@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import struct
 
-from .enums import Response, ServiceDueStatus
+from .enums import Command, ExData, Response, ServiceDueStatus
 from .group import GroupPowerStatus, ZoneTouch3Group
 from .message import ZoneTouchMessage
 
@@ -41,9 +41,9 @@ class ZoneTouch3State:
         )
         data_raw = raw_response[-data_length - 2 : -2]
 
-        if message_type == 31:
+        if Command(message_type) == Command.COMMAND_EXPAND:
             data_type = struct.unpack_from(">H", data_raw, 0)[0]
-            if data_type == 65520:
+            if ExData(data_type) == ExData.EX_DATA_FULL_STATE:
                 len = zonetouch.__parseSystemInfo(data_raw)
                 zonetouch.__parseGroupInfo(data_raw[len:])
 
