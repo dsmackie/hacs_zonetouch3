@@ -2,25 +2,14 @@
 
 from __future__ import annotations
 
-from enum import Enum
 import logging
 import struct
 
-from .enums import Response
+from .enums import Response, ServiceDueStatus
 from .group import GroupPowerStatus, ZoneTouch3Group
 from .message import ZoneTouchMessage
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class ServiceDueStatus(Enum):
-    """Group Power Status."""
-
-    UNKNOWN = -1
-    NO = 0
-    HALF_YEAR = 1
-    ONE_YEAR = 2
-    TWO_YEARS = 3
 
 
 class ZoneTouch3State:
@@ -29,18 +18,18 @@ class ZoneTouch3State:
     def __init__(self) -> None:
         """Init state."""
         self.device_id: int = 0
-        self.owner: str = None
+        self.owner: str
         self.opt: int = 0
         self.service_due: ServiceDueStatus = ServiceDueStatus.UNKNOWN
-        self.password: str = None
-        self.installer: str = None
-        self.telephone: str = None
-        self.temperature: float = 0
-        self.hardware_version: str = None
-        self.firmware_version: str = None
-        self.boot_version: str = None
-        self.console_version: str = None
-        self.console_id: str = None
+        self.password: str
+        self.installer: str
+        self.telephone: str
+        self.temperature: float = 0.0
+        self.hardware_version: str
+        self.firmware_version: str
+        self.boot_version: str
+        self.console_version: str
+        self.console_id: str
         self.groups: dict[int, ZoneTouch3Group] = {}
 
     @staticmethod
@@ -51,7 +40,6 @@ class ZoneTouch3State:
             ">IHBBH", raw_response[:10]
         )
         data_raw = raw_response[-data_length - 2 : -2]
-        # crc16_check = data[-data_length-2:-2]
 
         if message_type == 31:
             data_type = struct.unpack_from(">H", data_raw, 0)[0]

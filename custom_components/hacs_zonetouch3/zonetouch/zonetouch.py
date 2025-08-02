@@ -13,9 +13,6 @@ from .state import ZoneTouch3State
 
 _LOGGER = logging.getLogger(__name__)
 
-PROTOCOL_HEAD_S = 0x55
-PROTOCOL_HEAD_E = 0xAA
-
 
 class ZoneTouch3Exception(Exception):
     """Base class for errors throw by ZoneTouch3."""
@@ -35,13 +32,6 @@ class ZoneTouch3ConnectionFailedException(ZoneTouch3Exception):
 
 class ZoneTouch:
     "ZoneTouch class."
-
-    ADDRESS_CONSOLE = 0x90
-    ADDRESS_REMOTE = 0xB0
-    COMMAND_EXPAND = 0x1F
-    EX_DATA_FULL_STATE = 0xFFF0
-    PROTOCOL_HEAD_S = 0x55
-    PROTOCOL_HEAD_E = 0xAA
 
     def __init__(
         self,

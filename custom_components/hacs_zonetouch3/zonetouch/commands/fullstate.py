@@ -4,7 +4,6 @@ import struct
 
 import modbus_crc
 
-from ..const import PROTOCOL_HEAD_E, PROTOCOL_HEAD_S
 from ..enums import Address, Command, ExData
 from .command import CommandPacket
 
@@ -16,19 +15,10 @@ class FullState(CommandPacket):
         """Init FullState."""
         super().__init__()
         self.addr_dest = Address.ADDRESS_CONSOLE
-        self.addr_src = Address.ADDRESS_REMOTE
         self.command = Command.COMMAND_EXPAND
 
     def build_packet(self) -> bytes:
         """Build command packet."""
-        header = struct.pack(
-            ">BBBB",
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_E,
-        )
-
         data = struct.pack(
             ">BBB", self.addr_dest.value, self.addr_src.value, self.message_id
         )
@@ -38,4 +28,4 @@ class FullState(CommandPacket):
 
         crc = modbus_crc.crc16(data)
 
-        return header + data + struct.pack("<BB", crc[1], crc[0])
+        return self.build_header() + data + struct.pack("<BB", crc[1], crc[0])

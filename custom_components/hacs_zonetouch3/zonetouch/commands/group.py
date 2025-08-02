@@ -4,7 +4,6 @@ import struct
 
 import modbus_crc
 
-from ..const import PROTOCOL_HEAD_E, PROTOCOL_HEAD_S
 from ..enums import Address, Command
 from .command import CommandPacket
 
@@ -16,19 +15,10 @@ class GroupCommand(CommandPacket):
         """Init FullState."""
         super().__init__()
         self.addr_dest = Address.ADDRESS_MAIN_BOARD
-        self.addr_src = Address.ADDRESS_REMOTE
         self.command = Command.COMMAND_GROUP_CONTROL
 
     def build_position_packet(self, group_id: int, position: int) -> bytes:
         """Generate a packet to set the group to desired position."""
-        header = struct.pack(
-            ">BBBB",
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_E,
-        )
-
         data = struct.pack(
             ">BBB", self.addr_dest.value, self.addr_src.value, self.message_id
         )
@@ -38,7 +28,7 @@ class GroupCommand(CommandPacket):
 
         crc = modbus_crc.crc16(data)
 
-        return header + data + struct.pack("<BB", crc[1], crc[0])
+        return self.build_header() + data + struct.pack("<BB", crc[1], crc[0])
 
     def build_closed_packet(self, group_id: int, closed: bool) -> bytes:
         """Generate a packet to close the valve."""
@@ -47,13 +37,6 @@ class GroupCommand(CommandPacket):
             valve = 2
         else:
             valve = 3
-        header = struct.pack(
-            ">BBBB",
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_S,
-            PROTOCOL_HEAD_E,
-        )
 
         data = struct.pack(
             ">BBB", self.addr_dest.value, self.addr_src.value, self.message_id
@@ -64,4 +47,4 @@ class GroupCommand(CommandPacket):
 
         crc = modbus_crc.crc16(data)
 
-        return header + data + struct.pack("<BB", crc[1], crc[0])
+        return self.build_header() + data + struct.pack("<BB", crc[1], crc[0])

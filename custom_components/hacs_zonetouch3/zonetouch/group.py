@@ -1,18 +1,10 @@
 """Group file."""
 
 from dataclasses import dataclass
-from enum import Enum
 import struct
 from typing import Self
 
-
-class GroupPowerStatus(Enum):
-    """Group Power Status."""
-
-    NO_ZONE = -1
-    ON = 1
-    OFF = 0
-    TURBO = 2
+from .enums import GroupPowerStatus
 
 
 @dataclass

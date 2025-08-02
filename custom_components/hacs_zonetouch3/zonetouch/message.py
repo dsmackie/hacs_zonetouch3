@@ -21,8 +21,8 @@ class ZoneTouchMessage:
         self.addrDest = None
         self.addrSrc = None
         self.message_id: int = 0
-        self.message_type: MessageType = MessageType.NONE
-        self.sub_message_type: Response = Response.NONE
+        self.message_type: MessageType
+        self.sub_message_type: Response
         self.length = None
         self.message_data = b""
         self.temperature: float = 0
