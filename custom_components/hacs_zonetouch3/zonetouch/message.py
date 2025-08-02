@@ -82,12 +82,12 @@ class ZoneTouchMessage:
                 case _:
                     self.message_data = self.data[11:-2]
 
-        _LOGGER.debug(Address(self.addrDest))
-        _LOGGER.debug(Address(self.addrSrc))
-        _LOGGER.debug(self.message_type)
-        _LOGGER.debug(self.sub_message_type)
-        _LOGGER.debug(self.data.hex())
-        _LOGGER.debug(self.message_data.hex())
+            _LOGGER.debug(Address(self.addrDest))
+            _LOGGER.debug(Address(self.addrSrc))
+            _LOGGER.debug(self.message_type)
+            _LOGGER.debug(self.sub_message_type)
+            _LOGGER.debug(self.data.hex())
+            _LOGGER.debug(self.message_data.hex())
 
     def __validate(self) -> bool:
         """Validate received data.
