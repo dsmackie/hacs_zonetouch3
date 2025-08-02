@@ -149,6 +149,7 @@ class ZoneTouch3State:
             powerStatus,
             is_support_turbo,
             is_spill_on,
+            False,
         )
 
     def __parseGroupInfo(self, data):

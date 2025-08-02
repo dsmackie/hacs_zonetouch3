@@ -1,11 +1,14 @@
 """ZoneTouch 3 fullstate class."""
 
+import logging
 import struct
 
 import modbus_crc
 
 from ..enums import Address, Command, ExData
 from .command import CommandPacket
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class FullState(CommandPacket):
@@ -20,7 +23,10 @@ class FullState(CommandPacket):
     def build_packet(self) -> bytes:
         """Build command packet."""
         data = struct.pack(
-            ">BBB", self.addr_dest.value, self.addr_src.value, self.message_id
+            ">BBB",
+            self.addr_dest.value,
+            self.addr_src.value,
+            CommandPacket.next_msg_id(),
         )
         data += struct.pack(">B", self.command.value)
         data += struct.pack(">H", 2)

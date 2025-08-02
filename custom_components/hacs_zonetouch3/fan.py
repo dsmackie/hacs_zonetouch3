@@ -11,7 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import ATTR_SPEED, DOMAIN, EVENT_ZONETOUCH3_FAN_PERCENTAGE
 from .data import ZoneTouch3ConfigEntry
 from .entity import ZoneTouch3DataUpdateCoordinator, ZoneTouch3Entity
-from .zonetouch.commands.group import GroupCommand
+from .zonetouch.messages.group import GroupCommand
 from .zonetouch.group import GroupPowerStatus, ZoneTouch3Group
 
 _LOGGER = logging.getLogger(__name__)

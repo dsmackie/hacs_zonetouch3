@@ -19,12 +19,16 @@ async def async_setup_entry(
 ) -> None:
     """Set up the binary sensor platform."""
     async_add_entities(
-        ZoneTouch3GroupSpillSensor(entry.runtime_data.coordinator, group)
+        ZoneTouch3GroupSpillSetSensor(entry.runtime_data.coordinator, group)
+        for group in entry.runtime_data.coordinator.data.groups.values()
+    )
+    async_add_entities(
+        ZoneTouch3GroupSpillActiveSensor(entry.runtime_data.coordinator, group)
         for group in entry.runtime_data.coordinator.data.groups.values()
     )
 
 
-class ZoneTouch3GroupSpillSensor(BinarySensorEntity, ZoneTouch3Entity):
+class ZoneTouch3GroupSpillActiveSensor(BinarySensorEntity, ZoneTouch3Entity):
     """Group Spill Sensor class."""
 
     def __init__(
@@ -35,17 +39,44 @@ class ZoneTouch3GroupSpillSensor(BinarySensorEntity, ZoneTouch3Entity):
         """Initialize the sensor."""
         super().__init__(coordinator)
         self.group = group
-        self._attr_name = f"{group.name} Spill"
+        self._attr_name = f"{group.name} Spill Active"
         self._attr_on_icon = ("mdi:fan-auto",)
         self._attr_off_icon = ("mdi:fan-off",)
-        self._attr_unique_id = f"{DOMAIN}_valve_{group.id}_spill"
-        self._attr_name = f"{group.name} Spill"
+        self._attr_unique_id = f"{DOMAIN}_fan_{group.id}_spill_active"
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def is_on(self) -> bool | None:
         """Return true if the binary sensor is on."""
         return self.group.is_spill_on
+
+    @property
+    def icon(self):
+        """Return the icon to use in the frontend, if any."""
+        return self._attr_on_icon if self.is_on else self._attr_off_icon
+
+
+class ZoneTouch3GroupSpillSetSensor(BinarySensorEntity, ZoneTouch3Entity):
+    """Group Spill Sensor class."""
+
+    def __init__(
+        self,
+        coordinator: ZoneTouch3DataUpdateCoordinator,
+        group: ZoneTouch3Group,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator)
+        self.group = group
+        self._attr_name = f"{group.name} Spill Set"
+        self._attr_on_icon = ("mdi:fan-auto",)
+        self._attr_off_icon = ("mdi:fan-off",)
+        self._attr_unique_id = f"{DOMAIN}_fan_{group.id}_spill_set"
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return true if the binary sensor is on."""
+        return self.group.is_spill_set
 
     @property
     def icon(self):

@@ -17,6 +17,7 @@ class ZoneTouch3Group:
     status: GroupPowerStatus
     is_support_turbo: bool
     is_spill_on: bool
+    is_spill_set: bool
 
     @classmethod
     def parse_group_names(cls, data: bytes, count: int, length: int) -> dict[int, str]:
@@ -50,11 +51,12 @@ class ZoneTouch3Group:
 
             groups[groupIndex] = cls(
                 groupIndex,
-                "",
+                groups[groupIndex].name,
                 position,
                 powerStatus,
                 is_support_turbo,
                 is_spill_on,
+                groups[groupIndex].is_spill_set,
             )
 
         return groups

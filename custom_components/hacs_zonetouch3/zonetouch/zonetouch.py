@@ -7,8 +7,9 @@ import socket
 import struct
 from typing import Any
 
-from .commands.fullstate import FullState
 from .message import ZoneTouchMessage
+from .messages.fullstate import FullState
+from .messages.spill import Spill
 from .state import ZoneTouch3State
 
 _LOGGER = logging.getLogger(__name__)
@@ -54,15 +55,23 @@ class ZoneTouch:
         self.listener: asyncio.Task
         self.state = ZoneTouch3State()
 
-    async def async_get_full_state(self) -> ZoneTouch3State:
+    async def async_get_full_state(self) -> ZoneTouch3State | None:
         """Get data from the API."""
         full_state_command = FullState().build_packet()
         data = await self.send(full_state_command, True)
         if data:
             self.state = ZoneTouch3State.from_bytes(data)
+
+            spill_state_command = Spill().build_packet()
+            spill_response = await self.send(spill_state_command, True)
+            spill_message = Spill.from_bytes(spill_response)
+            if spill_message:
+                for group in self.state.groups.values():
+                    group.is_spill_set = group.id in spill_message.groups
+
             return self.state
 
-        return ZoneTouch3State()
+        return None
 
     async def connect(self):
         """Connect to the ZoneTouch3 controller."""

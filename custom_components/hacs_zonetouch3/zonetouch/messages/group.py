@@ -20,7 +20,10 @@ class GroupCommand(CommandPacket):
     def build_position_packet(self, group_id: int, position: int) -> bytes:
         """Generate a packet to set the group to desired position."""
         data = struct.pack(
-            ">BBB", self.addr_dest.value, self.addr_src.value, self.message_id
+            ">BBB",
+            self.addr_dest.value,
+            self.addr_src.value,
+            CommandPacket.next_msg_id(),
         )
         data += struct.pack(">B", self.command.value >> 8)
         data += struct.pack(">BBB", 0, 12, self.command.value % 256)
@@ -39,7 +42,10 @@ class GroupCommand(CommandPacket):
             valve = 3
 
         data = struct.pack(
-            ">BBB", self.addr_dest.value, self.addr_src.value, self.message_id
+            ">BBB",
+            self.addr_dest.value,
+            self.addr_src.value,
+            CommandPacket.next_msg_id(),
         )
         data += struct.pack(">B", self.command.value >> 8)
         data += struct.pack(">BBB", 0, 12, self.command.value % 256)
